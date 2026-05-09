@@ -1,0 +1,28 @@
+# Git
+.git
+.gitignore
+
+# Build
+build/
+*.exe
+*.exe~
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+runtime/logs/
+
+# Go
+vendor/
+
+# Docker
+docker-compose.yml
+Dockerfile
