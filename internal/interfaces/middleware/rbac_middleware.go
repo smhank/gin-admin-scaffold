@@ -19,8 +19,8 @@ func RBACMiddleware(permission string, authSvc *application.AuthService) gin.Han
 			return
 		}
 
-		// 从上下文中获取用户 ID
-		userIDStr, exists := c.Get("userID")
+		// 从上下文中获取用户 ID（可能是 username 字符串或 uint）
+		userIDVal, exists := c.Get("userID")
 		if !exists {
 			response.Unauthorized(c, "未授权访问")
 			c.Abort()
@@ -29,15 +29,22 @@ func RBACMiddleware(permission string, authSvc *application.AuthService) gin.Han
 
 		// 转换 userID 为 uint
 		var userID uint
-		switch v := userIDStr.(type) {
+		switch v := userIDVal.(type) {
 		case string:
+			// 尝试解析为数字 ID
 			id, err := strconv.ParseUint(v, 10, 64)
 			if err != nil {
-				response.Unauthorized(c, "无效的用户身份")
-				c.Abort()
-				return
+				// 如果是用户名，从数据库查找用户
+				user, lookupErr := authSvc.GetUserByUsername(v)
+				if lookupErr != nil {
+					response.Unauthorized(c, "无效的用户身份")
+					c.Abort()
+					return
+				}
+				userID = user.ID
+			} else {
+				userID = uint(id)
 			}
-			userID = uint(id)
 		case uint:
 			userID = v
 		case float64:
@@ -48,7 +55,7 @@ func RBACMiddleware(permission string, authSvc *application.AuthService) gin.Han
 			return
 		}
 
-		// 校验权限
+		// 校验权限（CheckPermission 内部会检查 "*" 通配符权限编码）
 		hasPermission, err := authSvc.CheckPermission(userID, permission)
 		if err != nil || !hasPermission {
 			response.Forbidden(c, "权限不足："+permission)

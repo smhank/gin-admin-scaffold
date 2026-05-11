@@ -1,0 +1,116 @@
+2026-05-11T09:11:56.149+0800	[33mWARN[0m	app/app.go:44	Register default handlers failed	{"error": "注册操作日志处理器失败: 创建消费组失败: NOAUTH Authentication required."}
+2026-05-11T09:11:56.159+0800	[34mINFO[0m	app/app.go:132	定时任务已启动	{"task": "clean_expired_logs", "spec": "@every 24h"}
+2026-05-11T09:11:56.159+0800	[34mINFO[0m	app/app.go:132	定时任务已启动	{"task": "system_heartbeat", "spec": "@every 5m"}
+2026-05-11T09:11:56.159+0800	[34mINFO[0m	app/app.go:132	定时任务已启动	{"task": "check_db_connection", "spec": "@every 30s"}
+2026-05-11T09:11:56.159+0800	[34mINFO[0m	app/app.go:45	Cron scheduler started successfully
+2026-05-11T09:11:56.159+0800	[34mINFO[0m	app/app.go:61	所有定时任务已停止
+2026-05-11T09:11:56.160+0800	[34mINFO[0m	gin-admin-base/main.go:11	Starting server	{"addr": "0.0.0.0:9501"}
+2026-05-11T09:12:26.160+0800	[34mINFO[0m	runtime/asm_amd64.s:1771	定时任务已停止	{"task": "check_db_connection"}
+2026-05-11T09:16:56.160+0800	[34mINFO[0m	runtime/asm_amd64.s:1771	定时任务已停止	{"task": "system_heartbeat"}
+2026-05-11T15:01:34.531+0800	[33mWARN[0m	app/app.go:44	Register default handlers failed	{"error": "注册操作日志处理器失败: 创建消费组失败: NOAUTH Authentication required."}
+2026-05-11T15:01:34.543+0800	[34mINFO[0m	app/app.go:132	定时任务已启动	{"task": "clean_expired_logs", "spec": "@every 24h"}
+2026-05-11T15:01:34.543+0800	[34mINFO[0m	app/app.go:132	定时任务已启动	{"task": "system_heartbeat", "spec": "@every 5m"}
+2026-05-11T15:01:34.543+0800	[34mINFO[0m	app/app.go:132	定时任务已启动	{"task": "check_db_connection", "spec": "@every 30s"}
+2026-05-11T15:01:34.543+0800	[34mINFO[0m	app/app.go:45	Cron scheduler started successfully
+2026-05-11T15:01:34.543+0800	[34mINFO[0m	app/app.go:61	所有定时任务已停止
+2026-05-11T15:01:34.543+0800	[34mINFO[0m	gin-admin-base/main.go:11	Starting server	{"addr": "0.0.0.0:9501"}
+2026-05-11T15:02:04.543+0800	[34mINFO[0m	runtime/asm_amd64.s:1771	定时任务已停止	{"task": "check_db_connection"}
+2026-05-11T15:06:34.544+0800	[34mINFO[0m	runtime/asm_amd64.s:1771	定时任务已停止	{"task": "system_heartbeat"}
+2026-05-11T15:20:58.653+0800	[33mWARN[0m	app/app.go:44	Register default handlers failed	{"error": "注册操作日志处理器失败: 创建消费组失败: NOAUTH Authentication required."}
+2026-05-11T15:20:58.664+0800	[34mINFO[0m	app/app.go:132	定时任务已启动	{"task": "clean_expired_logs", "spec": "@every 24h"}
+2026-05-11T15:20:58.664+0800	[34mINFO[0m	app/app.go:132	定时任务已启动	{"task": "system_heartbeat", "spec": "@every 5m"}
+2026-05-11T15:20:58.665+0800	[34mINFO[0m	app/app.go:132	定时任务已启动	{"task": "check_db_connection", "spec": "@every 30s"}
+2026-05-11T15:20:58.665+0800	[34mINFO[0m	app/app.go:45	Cron scheduler started successfully
+2026-05-11T15:20:58.665+0800	[34mINFO[0m	app/app.go:61	所有定时任务已停止
+2026-05-11T15:20:58.665+0800	[34mINFO[0m	gin-admin-base/main.go:11	Starting server	{"addr": "0.0.0.0:9501"}
+2026-05-11T15:21:01.139+0800	[34mINFO[0m	gin@v1.12.0/context.go:192	用户登录成功	{"username": "admin"}
+2026-05-11T15:21:01.141+0800	[33mWARN[0m	gin@v1.12.0/context.go:192	发布操作日志消息失败	{"error": "发布消息到 Redis Stream 失败: NOAUTH Authentication required."}
+2026-05-11T15:21:28.665+0800	[34mINFO[0m	runtime/asm_amd64.s:1771	定时任务已停止	{"task": "check_db_connection"}
+2026-05-11T15:25:58.665+0800	[34mINFO[0m	runtime/asm_amd64.s:1771	定时任务已停止	{"task": "system_heartbeat"}
+2026-05-11T15:44:44.680+0800	[33mWARN[0m	app/app.go:44	Register default handlers failed	{"error": "注册操作日志处理器失败: 创建消费组失败: NOAUTH Authentication required."}
+2026-05-11T15:44:44.691+0800	[34mINFO[0m	app/app.go:132	定时任务已启动	{"task": "clean_expired_logs", "spec": "@every 24h"}
+2026-05-11T15:44:44.692+0800	[34mINFO[0m	app/app.go:132	定时任务已启动	{"task": "system_heartbeat", "spec": "@every 5m"}
+2026-05-11T15:44:44.692+0800	[34mINFO[0m	app/app.go:132	定时任务已启动	{"task": "check_db_connection", "spec": "@every 30s"}
+2026-05-11T15:44:44.692+0800	[34mINFO[0m	app/app.go:45	Cron scheduler started successfully
+2026-05-11T15:44:44.693+0800	[34mINFO[0m	app/app.go:61	所有定时任务已停止
+2026-05-11T15:44:44.693+0800	[34mINFO[0m	gin-admin-base/main.go:11	Starting server	{"addr": "0.0.0.0:9501"}
+2026-05-11T15:45:14.692+0800	[34mINFO[0m	runtime/asm_amd64.s:1771	定时任务已停止	{"task": "check_db_connection"}
+2026-05-11T15:49:44.692+0800	[34mINFO[0m	runtime/asm_amd64.s:1771	定时任务已停止	{"task": "system_heartbeat"}
+2026-05-11T16:23:43.108+0800	[33mWARN[0m	app/app.go:44	Register default handlers failed	{"error": "注册操作日志处理器失败: 创建消费组失败: NOAUTH Authentication required."}
+2026-05-11T16:23:43.120+0800	[34mINFO[0m	app/app.go:132	定时任务已启动	{"task": "clean_expired_logs", "spec": "@every 24h"}
+2026-05-11T16:23:43.121+0800	[34mINFO[0m	app/app.go:132	定时任务已启动	{"task": "system_heartbeat", "spec": "@every 5m"}
+2026-05-11T16:23:43.121+0800	[34mINFO[0m	app/app.go:132	定时任务已启动	{"task": "check_db_connection", "spec": "@every 30s"}
+2026-05-11T16:23:43.121+0800	[34mINFO[0m	app/app.go:45	Cron scheduler started successfully
+2026-05-11T16:23:43.121+0800	[34mINFO[0m	app/app.go:61	所有定时任务已停止
+2026-05-11T16:23:43.121+0800	[34mINFO[0m	gin-admin-base/main.go:11	Starting server	{"addr": "0.0.0.0:9501"}
+2026-05-11T16:24:13.121+0800	[34mINFO[0m	runtime/asm_amd64.s:1771	定时任务已停止	{"task": "check_db_connection"}
+2026-05-11T16:28:34.103+0800	[33mWARN[0m	app/app.go:44	Register default handlers failed	{"error": "注册操作日志处理器失败: 创建消费组失败: NOAUTH Authentication required."}
+2026-05-11T16:28:34.115+0800	[34mINFO[0m	app/app.go:132	定时任务已启动	{"task": "clean_expired_logs", "spec": "@every 24h"}
+2026-05-11T16:28:34.115+0800	[34mINFO[0m	app/app.go:132	定时任务已启动	{"task": "system_heartbeat", "spec": "@every 5m"}
+2026-05-11T16:28:34.115+0800	[34mINFO[0m	app/app.go:132	定时任务已启动	{"task": "check_db_connection", "spec": "@every 30s"}
+2026-05-11T16:28:34.115+0800	[34mINFO[0m	app/app.go:45	Cron scheduler started successfully
+2026-05-11T16:28:34.116+0800	[34mINFO[0m	app/app.go:61	所有定时任务已停止
+2026-05-11T16:28:34.116+0800	[34mINFO[0m	gin-admin-base/main.go:11	Starting server	{"addr": "0.0.0.0:9501"}
+2026-05-11T16:29:04.115+0800	[34mINFO[0m	runtime/asm_amd64.s:1771	定时任务已停止	{"task": "check_db_connection"}
+2026-05-11T16:32:48.920+0800	[33mWARN[0m	app/app.go:44	Register default handlers failed	{"error": "注册操作日志处理器失败: 创建消费组失败: NOAUTH Authentication required."}
+2026-05-11T16:32:48.937+0800	[34mINFO[0m	app/app.go:132	定时任务已启动	{"task": "clean_expired_logs", "spec": "@every 24h"}
+2026-05-11T16:32:48.938+0800	[34mINFO[0m	app/app.go:132	定时任务已启动	{"task": "system_heartbeat", "spec": "@every 5m"}
+2026-05-11T16:32:48.941+0800	[34mINFO[0m	app/app.go:132	定时任务已启动	{"task": "check_db_connection", "spec": "@every 30s"}
+2026-05-11T16:32:48.942+0800	[34mINFO[0m	app/app.go:45	Cron scheduler started successfully
+2026-05-11T16:32:48.944+0800	[34mINFO[0m	app/app.go:61	所有定时任务已停止
+2026-05-11T16:32:48.944+0800	[34mINFO[0m	gin-admin-base/main.go:11	Starting server	{"addr": "0.0.0.0:9501"}
+2026-05-11T16:33:18.942+0800	[34mINFO[0m	runtime/asm_amd64.s:1771	定时任务已停止	{"task": "check_db_connection"}
+2026-05-11T16:36:12.699+0800	[34mINFO[0m	gin@v1.12.0/context.go:192	用户登录成功	{"username": "admin"}
+2026-05-11T16:36:12.702+0800	[33mWARN[0m	gin@v1.12.0/context.go:192	发布操作日志消息失败	{"error": "发布消息到 Redis Stream 失败: NOAUTH Authentication required."}
+2026-05-11T16:37:48.939+0800	[34mINFO[0m	runtime/asm_amd64.s:1771	定时任务已停止	{"task": "system_heartbeat"}
+2026-05-11T16:39:11.724+0800	[33mWARN[0m	app/app.go:44	Register default handlers failed	{"error": "注册操作日志处理器失败: 创建消费组失败: NOAUTH Authentication required."}
+2026-05-11T16:39:11.734+0800	[34mINFO[0m	app/app.go:132	定时任务已启动	{"task": "clean_expired_logs", "spec": "@every 24h"}
+2026-05-11T16:39:11.734+0800	[34mINFO[0m	app/app.go:132	定时任务已启动	{"task": "system_heartbeat", "spec": "@every 5m"}
+2026-05-11T16:39:11.734+0800	[34mINFO[0m	app/app.go:132	定时任务已启动	{"task": "check_db_connection", "spec": "@every 30s"}
+2026-05-11T16:39:11.734+0800	[34mINFO[0m	app/app.go:45	Cron scheduler started successfully
+2026-05-11T16:39:11.735+0800	[34mINFO[0m	app/app.go:61	所有定时任务已停止
+2026-05-11T16:39:11.735+0800	[34mINFO[0m	gin-admin-base/main.go:11	Starting server	{"addr": "0.0.0.0:9501"}
+2026-05-11T16:39:41.734+0800	[34mINFO[0m	runtime/asm_amd64.s:1771	定时任务已停止	{"task": "check_db_connection"}
+2026-05-11T16:44:11.734+0800	[34mINFO[0m	runtime/asm_amd64.s:1771	定时任务已停止	{"task": "system_heartbeat"}
+2026-05-11T17:04:40.599+0800	[33mWARN[0m	app/app.go:44	Register default handlers failed	{"error": "注册操作日志处理器失败: 创建消费组失败: NOAUTH Authentication required."}
+2026-05-11T17:04:40.613+0800	[34mINFO[0m	app/app.go:132	定时任务已启动	{"task": "clean_expired_logs", "spec": "@every 24h"}
+2026-05-11T17:04:40.614+0800	[34mINFO[0m	app/app.go:132	定时任务已启动	{"task": "system_heartbeat", "spec": "@every 5m"}
+2026-05-11T17:04:40.614+0800	[34mINFO[0m	app/app.go:132	定时任务已启动	{"task": "check_db_connection", "spec": "@every 30s"}
+2026-05-11T17:04:40.614+0800	[34mINFO[0m	app/app.go:45	Cron scheduler started successfully
+2026-05-11T17:04:40.615+0800	[34mINFO[0m	app/app.go:61	所有定时任务已停止
+2026-05-11T17:04:40.615+0800	[34mINFO[0m	gin-admin-base/main.go:11	Starting server	{"addr": "0.0.0.0:9501"}
+2026-05-11T17:05:10.615+0800	[34mINFO[0m	runtime/asm_amd64.s:1771	定时任务已停止	{"task": "check_db_connection"}
+2026-05-11T17:09:40.614+0800	[34mINFO[0m	runtime/asm_amd64.s:1771	定时任务已停止	{"task": "system_heartbeat"}
+2026-05-11T17:40:13.840+0800	[33mWARN[0m	app/app.go:44	Register default handlers failed	{"error": "注册操作日志处理器失败: 创建消费组失败: NOAUTH Authentication required."}
+2026-05-11T17:40:13.852+0800	[34mINFO[0m	app/app.go:132	定时任务已启动	{"task": "clean_expired_logs", "spec": "@every 24h"}
+2026-05-11T17:40:13.852+0800	[34mINFO[0m	app/app.go:132	定时任务已启动	{"task": "system_heartbeat", "spec": "@every 5m"}
+2026-05-11T17:40:13.853+0800	[34mINFO[0m	app/app.go:132	定时任务已启动	{"task": "check_db_connection", "spec": "@every 30s"}
+2026-05-11T17:40:13.853+0800	[34mINFO[0m	app/app.go:45	Cron scheduler started successfully
+2026-05-11T17:40:13.854+0800	[34mINFO[0m	app/app.go:61	所有定时任务已停止
+2026-05-11T17:40:13.854+0800	[34mINFO[0m	gin-admin-base/main.go:11	Starting server	{"addr": "0.0.0.0:9501"}
+2026-05-11T17:40:43.853+0800	[34mINFO[0m	runtime/asm_amd64.s:1771	定时任务已停止	{"task": "check_db_connection"}
+2026-05-11T17:45:13.852+0800	[34mINFO[0m	runtime/asm_amd64.s:1771	定时任务已停止	{"task": "system_heartbeat"}
+2026-05-11T18:30:21.846+0800	[33mWARN[0m	app/app.go:44	Register default handlers failed	{"error": "注册操作日志处理器失败: 创建消费组失败: NOAUTH Authentication required."}
+2026-05-11T18:30:21.857+0800	[34mINFO[0m	app/app.go:132	定时任务已启动	{"task": "clean_expired_logs", "spec": "@every 24h"}
+2026-05-11T18:30:21.857+0800	[34mINFO[0m	app/app.go:132	定时任务已启动	{"task": "system_heartbeat", "spec": "@every 5m"}
+2026-05-11T18:30:21.857+0800	[34mINFO[0m	app/app.go:132	定时任务已启动	{"task": "check_db_connection", "spec": "@every 30s"}
+2026-05-11T18:30:21.857+0800	[34mINFO[0m	app/app.go:45	Cron scheduler started successfully
+2026-05-11T18:30:21.857+0800	[34mINFO[0m	app/app.go:61	所有定时任务已停止
+2026-05-11T18:30:21.857+0800	[34mINFO[0m	gin-admin-base/main.go:11	Starting server	{"addr": "0.0.0.0:9501"}
+2026-05-11T18:30:21.858+0800	[31mFATAL[0m	gin-admin-base/main.go:11	Server failed to start	{"error": "listen tcp 0.0.0.0:9501: bind: Only one usage of each socket address (protocol/network address/port) is normally permitted."}
+2026-05-11T18:40:28.405+0800	[33mWARN[0m	gin@v1.12.0/context.go:192	发布操作日志消息失败	{"error": "发布消息到 Redis Stream 失败: NOAUTH Authentication required."}
+2026-05-11T18:40:29.833+0800	[33mWARN[0m	gin@v1.12.0/context.go:192	发布操作日志消息失败	{"error": "发布消息到 Redis Stream 失败: NOAUTH Authentication required."}
+2026-05-11T18:40:30.756+0800	[33mWARN[0m	gin@v1.12.0/context.go:192	发布操作日志消息失败	{"error": "发布消息到 Redis Stream 失败: NOAUTH Authentication required."}
+2026-05-11T18:40:31.702+0800	[33mWARN[0m	gin@v1.12.0/context.go:192	发布操作日志消息失败	{"error": "发布消息到 Redis Stream 失败: NOAUTH Authentication required."}
+2026-05-11T18:40:34.566+0800	[33mWARN[0m	gin@v1.12.0/context.go:192	发布操作日志消息失败	{"error": "发布消息到 Redis Stream 失败: NOAUTH Authentication required."}
+2026-05-11T18:43:45.614+0800	[34mINFO[0m	gin@v1.12.0/context.go:192	用户登录成功	{"username": "admin"}
+2026-05-11T18:43:45.616+0800	[33mWARN[0m	gin@v1.12.0/context.go:192	发布操作日志消息失败	{"error": "发布消息到 Redis Stream 失败: NOAUTH Authentication required."}
+2026-05-11T18:46:06.889+0800	[33mWARN[0m	app/app.go:44	Register default handlers failed	{"error": "注册操作日志处理器失败: 创建消费组失败: NOAUTH Authentication required."}
+2026-05-11T18:46:06.899+0800	[34mINFO[0m	app/app.go:132	定时任务已启动	{"task": "clean_expired_logs", "spec": "@every 24h"}
+2026-05-11T18:46:06.900+0800	[34mINFO[0m	app/app.go:132	定时任务已启动	{"task": "system_heartbeat", "spec": "@every 5m"}
+2026-05-11T18:46:06.900+0800	[34mINFO[0m	app/app.go:132	定时任务已启动	{"task": "check_db_connection", "spec": "@every 30s"}
+2026-05-11T18:46:06.900+0800	[34mINFO[0m	app/app.go:45	Cron scheduler started successfully
+2026-05-11T18:46:06.901+0800	[34mINFO[0m	app/app.go:61	所有定时任务已停止
+2026-05-11T18:46:06.901+0800	[34mINFO[0m	gin-admin-base/main.go:11	Starting server	{"addr": "0.0.0.0:9501"}
+2026-05-11T18:46:06.901+0800	[31mFATAL[0m	gin-admin-base/main.go:11	Server failed to start	{"error": "listen tcp 0.0.0.0:9501: bind: Only one usage of each socket address (protocol/network address/port) is normally permitted."}
+2026-05-11T18:46:39.905+0800	[33mWARN[0m	gin@v1.12.0/context.go:192	发布操作日志消息失败	{"error": "发布消息到 Redis Stream 失败: NOAUTH Authentication required."}

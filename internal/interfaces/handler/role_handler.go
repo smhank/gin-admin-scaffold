@@ -3,6 +3,7 @@ package handler
 import (
 	"fmt"
 	"gin-admin-base/internal/domain/model"
+	"gin-admin-base/internal/infras/cache"
 	"gin-admin-base/internal/infras/global"
 	"net/http"
 	"sync"
@@ -153,6 +154,8 @@ func (h *RoleHandler) CreateRole(c *gin.Context) {
 		h.db.Find(&perms, req.Permissions)
 		h.db.Model(&role).Association("Permissions").Replace(perms)
 	}
+	// 角色变更，清除所有用户权限缓存
+	cache.ClearAllPermissionCaches()
 	c.JSON(http.StatusOK, gin.H{"code": 0, "msg": "创建成功", "data": role})
 }
 
@@ -213,6 +216,8 @@ func (h *RoleHandler) UpdateRole(c *gin.Context) {
 		h.db.Find(&perms, req.Permissions)
 		h.db.Model(&role).Association("Permissions").Replace(perms)
 	}
+	// 角色变更，清除所有用户权限缓存
+	cache.ClearAllPermissionCaches()
 	c.JSON(http.StatusOK, gin.H{"code": 0, "msg": "更新成功"})
 }
 
@@ -239,6 +244,8 @@ func (h *RoleHandler) DeleteRole(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"code": 1, "msg": "删除失败"})
 		return
 	}
+	// 角色变更，清除所有用户权限缓存
+	cache.ClearAllPermissionCaches()
 	c.JSON(http.StatusOK, gin.H{"code": 0, "msg": "删除成功"})
 }
 
@@ -272,6 +279,8 @@ func (h *RoleHandler) SetRolePermissions(c *gin.Context) {
 	} else {
 		h.db.Model(&role).Association("Permissions").Clear()
 	}
+	// 角色权限变更，清除所有用户权限缓存
+	cache.ClearAllPermissionCaches()
 	c.JSON(http.StatusOK, gin.H{"code": 0, "msg": "设置成功"})
 }
 
@@ -349,5 +358,7 @@ func (h *RoleHandler) AssignRoleToUser(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"code": 1, "msg": "分配失败"})
 		return
 	}
+	// 用户角色变更，清除所有用户权限缓存
+	cache.ClearAllPermissionCaches()
 	c.JSON(http.StatusOK, gin.H{"code": 0, "msg": "分配成功", "data": nil})
 }

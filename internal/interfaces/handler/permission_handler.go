@@ -3,6 +3,7 @@ package handler
 import (
 	"fmt"
 	"gin-admin-base/internal/domain/model"
+	"gin-admin-base/internal/infras/cache"
 	"gin-admin-base/internal/infras/global"
 	"net/http"
 	"sync"
@@ -91,6 +92,8 @@ func (h *PermissionHandler) CreatePermission(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"code": 1, "msg": "创建失败"})
 		return
 	}
+	// 权限变更，清除所有用户权限缓存
+	cache.ClearAllPermissionCaches()
 	c.JSON(http.StatusOK, gin.H{"code": 0, "msg": "创建成功", "data": perm})
 }
 
@@ -125,6 +128,8 @@ func (h *PermissionHandler) UpdatePermission(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"code": 1, "msg": "更新失败"})
 		return
 	}
+	// 权限变更，清除所有用户权限缓存
+	cache.ClearAllPermissionCaches()
 	c.JSON(http.StatusOK, gin.H{"code": 0, "msg": "更新成功"})
 }
 
@@ -151,5 +156,7 @@ func (h *PermissionHandler) DeletePermission(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"code": 1, "msg": "删除失败"})
 		return
 	}
+	// 权限变更，清除所有用户权限缓存
+	cache.ClearAllPermissionCaches()
 	c.JSON(http.StatusOK, gin.H{"code": 0, "msg": "删除成功"})
 }

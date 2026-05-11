@@ -1,8 +1,9 @@
 import axios from 'axios'
 import { ElMessage } from 'element-plus'
+import router from '@/router'
 
 const service = axios.create({
-  baseURL: '/api',
+  baseURL: '/api/admin',
   timeout: 5000
 })
 
@@ -27,7 +28,19 @@ service.interceptors.response.use(
     return res.data
   },
   error => {
-    ElMessage.error(error.message || 'Request Error')
+    if (error.response) {
+      const status = error.response.status
+      if (status === 401) {
+        localStorage.removeItem('token')
+        localStorage.removeItem('username')
+        router.push('/login')
+        ElMessage.error('登录已过期，请重新登录')
+      } else {
+        ElMessage.error(error.response.data?.msg || error.message || 'Request Error')
+      }
+    } else {
+      ElMessage.error(error.message || 'Request Error')
+    }
     return Promise.reject(error)
   }
 )

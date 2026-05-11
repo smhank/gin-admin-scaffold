@@ -23,16 +23,12 @@ func NewM20250506000001InitSeedData() *M20250506000001InitSeedData {
 
 // Up 执行迁移
 func (m *M20250506000001InitSeedData) Up(db *gorm.DB) error {
-	// 检查是否已有数据
-	var userCount int64
-	db.Model(&model.User{}).Count(&userCount)
-	if userCount > 0 {
-		fmt.Println("  数据库已有用户数据，跳过种子数据初始化")
-		return nil
-	}
+	// 0. 清理旧权限：删除旧的错误权限代码（如 api:list 等）
+	db.Where("code LIKE ?", "api:%").Delete(&model.Permission{})
 
-	// 1. 创建权限
+	// 1. 创建/更新权限（使用 FirstOrCreate + Assign 确保更新已存在的记录）
 	permissions := []model.Permission{
+		{Name: "所有权限", Code: "*"},
 		{Name: "用户列表", Code: "user:list"},
 		{Name: "创建用户", Code: "user:create"},
 		{Name: "编辑用户", Code: "user:edit"},
@@ -45,19 +41,42 @@ func (m *M20250506000001InitSeedData) Up(db *gorm.DB) error {
 		{Name: "创建菜单", Code: "menu:create"},
 		{Name: "编辑菜单", Code: "menu:edit"},
 		{Name: "删除菜单", Code: "menu:delete"},
-		{Name: "API列表", Code: "api:list"},
-		{Name: "创建API", Code: "api:create"},
-		{Name: "编辑API", Code: "api:edit"},
-		{Name: "删除API", Code: "api:delete"},
+		{Name: "权限列表", Code: "permission:list"},
+		{Name: "创建权限", Code: "permission:create"},
+		{Name: "编辑权限", Code: "permission:edit"},
+		{Name: "删除权限", Code: "permission:delete"},
+		{Name: "API路径列表", Code: "path:list"},
+		{Name: "创建API路径", Code: "path:create"},
+		{Name: "编辑API路径", Code: "path:edit"},
+		{Name: "删除API路径", Code: "path:delete"},
+		{Name: "操作日志列表", Code: "operation-log:list"},
+		{Name: "删除操作日志", Code: "operation-log:delete"},
+		{Name: "迁移记录列表", Code: "migration:list"},
 	}
 	for i := range permissions {
-		if err := createIfNotExists(db, &permissions[i], map[string]interface{}{"code": permissions[i].Code}); err != nil {
-			return fmt.Errorf("创建权限 %s 失败: %w", permissions[i].Name, err)
+		// 先查找是否存在
+		var existing model.Permission
+		result := db.Where("code = ?", permissions[i].Code).First(&existing)
+		if result.Error != nil {
+			if result.Error == gorm.ErrRecordNotFound {
+				// 不存在则创建
+				if err := db.Create(&permissions[i]).Error; err != nil {
+					return fmt.Errorf("创建权限 %s 失败: %w", permissions[i].Name, err)
+				}
+			} else {
+				return fmt.Errorf("查询权限 %s 失败: %w", permissions[i].Name, result.Error)
+			}
+		} else {
+			// 存在则更新名称
+			if err := db.Model(&existing).Update("name", permissions[i].Name).Error; err != nil {
+				return fmt.Errorf("更新权限 %s 失败: %w", permissions[i].Name, err)
+			}
+			permissions[i].ID = existing.ID
 		}
 	}
 	fmt.Println("  ✓ 权限数据已就绪")
 
-	// 2. 创建角色
+	// 2. 创建角色（幂等）
 	roles := []model.Role{
 		{Name: "超级管理员", Status: 1},
 		{Name: "管理员", Status: 1},
@@ -71,7 +90,7 @@ func (m *M20250506000001InitSeedData) Up(db *gorm.DB) error {
 	}
 	fmt.Println("  ✓ 角色数据已就绪")
 
-	// 3. 创建用户（密码: admin123）
+	// 3. 创建用户（密码: admin123，幂等）
 	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte("admin123"), bcrypt.DefaultCost)
 	users := []model.User{
 		{
@@ -98,7 +117,7 @@ func (m *M20250506000001InitSeedData) Up(db *gorm.DB) error {
 	}
 	fmt.Println("  ✓ 用户数据已就绪")
 
-	// 4. 关联用户和角色（admin 关联超级管理员）
+	// 4. 关联 admin 用户到超级管理员角色（幂等）
 	var adminUser model.User
 	if err := db.Where("username = ?", "admin").First(&adminUser).Error; err != nil {
 		return fmt.Errorf("查询admin用户失败: %w", err)
@@ -117,19 +136,72 @@ func (m *M20250506000001InitSeedData) Up(db *gorm.DB) error {
 	}
 	fmt.Println("  ✓ 用户角色关联已就绪")
 
-	// 5. 关联角色和权限
+	// 5. 超级管理员角色分配所有权限（直接插入 role_permissions 表）
 	var allPerms []model.Permission
 	db.Find(&allPerms)
-	perms := make([]interface{}, len(allPerms))
-	for i, p := range allPerms {
-		perms[i] = p
+	for _, p := range allPerms {
+		var count int64
+		db.Table("role_permissions").Where("role_id = ? AND permission_id = ?", superAdminRole.ID, p.ID).Count(&count)
+		if count == 0 {
+			if err := db.Exec("INSERT INTO role_permissions (role_id, permission_id) VALUES (?, ?)", superAdminRole.ID, p.ID).Error; err != nil {
+				return fmt.Errorf("插入角色权限关联失败: %w", err)
+			}
+		}
 	}
-	if err := db.Model(&superAdminRole).Association("Permissions").Replace(perms...); err != nil {
-		return fmt.Errorf("关联角色权限失败: %w", err)
-	}
-	fmt.Println("  ✓ 角色权限关联已就绪")
+	fmt.Println("  ✓ 超级管理员角色已授予全部权限")
 
-	// 6. 创建菜单
+	// 6. 其他角色分配默认权限
+	// 管理员角色：分配部分管理权限
+	var adminRole model.Role
+	if err := db.Where("name = ?", "管理员").First(&adminRole).Error; err != nil {
+		return fmt.Errorf("查询管理员角色失败: %w", err)
+	}
+	var adminPerms []model.Permission
+	db.Where("code IN ?", []string{
+		"user:list", "role:list", "menu:list", "permission:list", "path:list", "operation-log:list",
+		"user:create", "role:create", "menu:create", "permission:create", "path:create",
+		"user:edit", "role:edit", "menu:edit", "permission:edit", "path:edit",
+	}).Find(&adminPerms)
+	for _, p := range adminPerms {
+		var count int64
+		db.Table("role_permissions").Where("role_id = ? AND permission_id = ?", adminRole.ID, p.ID).Count(&count)
+		if count == 0 {
+			if err := db.Exec("INSERT INTO role_permissions (role_id, permission_id) VALUES (?, ?)", adminRole.ID, p.ID).Error; err != nil {
+				return fmt.Errorf("插入管理员角色权限关联失败: %w", err)
+			}
+		}
+	}
+	fmt.Println("  ✓ 管理员角色已授予部分权限")
+
+	// 普通用户角色：分配只读权限
+	var normalRole model.Role
+	if err := db.Where("name = ?", "普通用户").First(&normalRole).Error; err != nil {
+		return fmt.Errorf("查询普通用户角色失败: %w", err)
+	}
+	var normalPerms []model.Permission
+	db.Where("code IN ?", []string{
+		"user:list", "role:list", "menu:list", "permission:list", "path:list", "operation-log:list",
+	}).Find(&normalPerms)
+	for _, p := range normalPerms {
+		var count int64
+		db.Table("role_permissions").Where("role_id = ? AND permission_id = ?", normalRole.ID, p.ID).Count(&count)
+		if count == 0 {
+			if err := db.Exec("INSERT INTO role_permissions (role_id, permission_id) VALUES (?, ?)", normalRole.ID, p.ID).Error; err != nil {
+				return fmt.Errorf("插入普通用户角色权限关联失败: %w", err)
+			}
+		}
+	}
+	fmt.Println("  ✓ 普通用户角色已授予只读权限")
+
+	// 测试角色：不分配任何权限
+	var testRole model.Role
+	if err := db.Where("name = ?", "测试角色").First(&testRole).Error; err != nil {
+		return fmt.Errorf("查询测试角色失败: %w", err)
+	}
+	db.Exec("DELETE FROM role_permissions WHERE role_id = ?", testRole.ID)
+	fmt.Println("  ✓ 测试角色无任何权限")
+
+	// 7. 创建菜单
 	menus := []model.Menu{
 		{Name: "仪表盘", Icon: "Odometer", Path: "/dashboard", ParentID: nil, Sort: 1, Status: 1},
 		{Name: "系统管理", Icon: "Setting", Path: "/system", ParentID: nil, Sort: 2, Status: 1},
@@ -145,7 +217,7 @@ func (m *M20250506000001InitSeedData) Up(db *gorm.DB) error {
 	}
 	fmt.Println("  ✓ 菜单数据已就绪")
 
-	// 7. 创建API路径
+	// 8. 创建API路径
 	apiPaths := []model.ApiPath{
 		{Name: "用户列表", Path: "/api/users", Method: "GET", Desc: "获取用户列表"},
 		{Name: "创建用户", Path: "/api/users", Method: "POST", Desc: "创建用户"},

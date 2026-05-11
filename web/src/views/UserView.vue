@@ -278,7 +278,7 @@ const handleResetPasswordConfirm = async () => {
     return
   }
   try {
-    await request.put(`/users/${currentUserId.value}/password`, {
+    await request.put(`/users/${currentUserId.value}/reset-password`, {
       password: passwordForm.value.password
     })
     ElMessage.success('密码重置成功')

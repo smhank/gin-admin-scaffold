@@ -128,7 +128,12 @@ func (h *AuthHandler) Login(c *gin.Context) {
 		return
 	}
 
-	permissions := []string{"user:list", "user:create", "user:edit", "user:delete"}
+	// 从数据库获取用户的实际权限
+	permCodes, err := h.svc.GetUserPermissionCodes(user.ID)
+	if err != nil {
+		global.Logger.Warn("获取用户权限失败", zap.String("username", req.Username), zap.Error(err))
+		permCodes = []string{}
+	}
 
 	global.Logger.Info("用户登录成功", zap.String("username", req.Username))
 
@@ -137,7 +142,7 @@ func (h *AuthHandler) Login(c *gin.Context) {
 		"msg":  "success",
 		"data": LoginResponse{
 			Token:       token,
-			Permissions: permissions,
+			Permissions: permCodes,
 		},
 	})
 }
