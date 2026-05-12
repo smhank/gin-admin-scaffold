@@ -114,3 +114,12 @@
 2026-05-11T18:46:06.901+0800	[34mINFO[0m	gin-admin-base/main.go:11	Starting server	{"addr": "0.0.0.0:9501"}
 2026-05-11T18:46:06.901+0800	[31mFATAL[0m	gin-admin-base/main.go:11	Server failed to start	{"error": "listen tcp 0.0.0.0:9501: bind: Only one usage of each socket address (protocol/network address/port) is normally permitted."}
 2026-05-11T18:46:39.905+0800	[33mWARN[0m	gin@v1.12.0/context.go:192	发布操作日志消息失败	{"error": "发布消息到 Redis Stream 失败: NOAUTH Authentication required."}
+2026-05-12T09:24:31.947+0800	[33mWARN[0m	app/app.go:44	Register default handlers failed	{"error": "注册操作日志处理器失败: 创建消费组失败: NOAUTH Authentication required."}
+2026-05-12T09:24:31.959+0800	[34mINFO[0m	app/app.go:132	定时任务已启动	{"task": "clean_expired_logs", "spec": "@every 24h"}
+2026-05-12T09:24:31.960+0800	[34mINFO[0m	app/app.go:132	定时任务已启动	{"task": "system_heartbeat", "spec": "@every 5m"}
+2026-05-12T09:24:31.960+0800	[34mINFO[0m	app/app.go:132	定时任务已启动	{"task": "check_db_connection", "spec": "@every 30s"}
+2026-05-12T09:24:31.960+0800	[34mINFO[0m	app/app.go:45	Cron scheduler started successfully
+2026-05-12T09:24:31.960+0800	[34mINFO[0m	app/app.go:61	所有定时任务已停止
+2026-05-12T09:24:31.960+0800	[34mINFO[0m	gin-admin-scaffold/main.go:11	Starting server	{"addr": "0.0.0.0:9501"}
+2026-05-12T09:25:01.960+0800	[34mINFO[0m	runtime/asm_amd64.s:1771	定时任务已停止	{"task": "check_db_connection"}
+2026-05-12T09:29:31.960+0800	[34mINFO[0m	runtime/asm_amd64.s:1771	定时任务已停止	{"task": "system_heartbeat"}

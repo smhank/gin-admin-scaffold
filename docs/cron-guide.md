@@ -34,14 +34,24 @@
 
 ### 1. 初始化调度器
 
-定时任务在 `main.go` 中自动初始化，无需手动配置：
+定时任务在 `internal/interfaces/app/app.go` 中自动初始化，无需手动配置：
 
 ```go
-// main.go 中自动执行
-scheduler := cron.NewScheduler(global.Logger)
-cron.RegisterDefaultTasks(scheduler)
-scheduler.Start()
-defer scheduler.Stop()
+// app.go 中自动执行
+func initCron() *cron.Scheduler {
+    if global.DB == nil {
+        return nil
+    }
+
+    scheduler := cron.NewScheduler(global.Logger)
+    cron.RegisterDefaultTasks(scheduler)
+    if err := scheduler.Start(); err != nil {
+        global.Logger.Warn("Cron scheduler start failed", zap.Error(err))
+        return nil
+    }
+    global.Logger.Info("Cron scheduler started successfully")
+    return scheduler
+}
 ```
 
 ### 2. 创建自定义任务
@@ -82,20 +92,29 @@ func RegisterMyTask(scheduler *cron.Scheduler) {
 
 ### 3. 注册任务
 
-在 `main.go` 中注册：
+在 `internal/interfaces/app/app.go` 的 `initCron` 函数中注册：
 
 ```go
-import "your-project/internal/infras/cron"
+func initCron() *cron.Scheduler {
+    if global.DB == nil {
+        return nil
+    }
 
-scheduler := cron.NewScheduler(global.Logger)
+    scheduler := cron.NewScheduler(global.Logger)
 
-// 注册默认任务
-cron.RegisterDefaultTasks(scheduler)
+    // 注册默认任务
+    cron.RegisterDefaultTasks(scheduler)
 
-// 注册自定义任务
-RegisterMyTask(scheduler)
+    // 注册自定义任务
+    RegisterMyTask(scheduler)
 
-scheduler.Start()
+    if err := scheduler.Start(); err != nil {
+        global.Logger.Warn("Cron scheduler start failed", zap.Error(err))
+        return nil
+    }
+    global.Logger.Info("Cron scheduler started successfully")
+    return scheduler
+}
 ```
 
 ## 定时表达式
@@ -129,11 +148,15 @@ scheduler.Start()
 
 ```go
 func CleanExpiredLogs(ctx context.Context) error {
-    // 删除 30 天前的操作日志
+    if global.DB == nil {
+        return nil
+    }
+
     cutoff := time.Now().AddDate(0, 0, -30)
     result := global.DB.Exec("DELETE FROM operation_logs WHERE created_at < ?", cutoff)
     global.Logger.Info("清理过期操作日志",
         zap.Int64("deleted_count", result.RowsAffected),
+        zap.Time("cutoff", cutoff),
     )
     return nil
 }
@@ -143,7 +166,10 @@ func CleanExpiredLogs(ctx context.Context) error {
 
 ```go
 func SystemHeartbeat(ctx context.Context) error {
-    // 通过消息队列发送心跳事件
+    if global.MsgRouter == nil {
+        return nil
+    }
+
     return global.MsgRouter.Publish(queue.TopicSystemEvent, map[string]interface{}{
         "event":     "heartbeat",
         "timestamp": time.Now().Unix(),
@@ -156,6 +182,10 @@ func SystemHeartbeat(ctx context.Context) error {
 
 ```go
 func CheckDBConnection(ctx context.Context) error {
+    if global.DB == nil {
+        return nil
+    }
+
     sqlDB, err := global.DB.DB()
     if err != nil {
         return fmt.Errorf("获取数据库实例失败: %w", err)
@@ -206,12 +236,13 @@ func CleanExpiredLogs(ctx context.Context) error {
 
 ### 4. 资源清理
 
-在 `main.go` 中使用 `defer` 确保程序退出时停止所有任务：
+在 `app.go` 中使用 `defer` 确保程序退出时停止所有任务：
 
 ```go
-scheduler := cron.NewScheduler(global.Logger)
-scheduler.Start()
-defer scheduler.Stop() // 程序退出时自动停止
+scheduler := initCron()
+if scheduler != nil {
+    defer scheduler.Stop() // 程序退出时自动停止
+}
 ```
 
 ### 5. 避免任务重叠

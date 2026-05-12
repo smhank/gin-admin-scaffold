@@ -33,17 +33,29 @@
 
 ## 配置
 
-### 环境变量 (.env)
+### 配置文件 (config.yaml)
 
-```env
-# 消息队列驱动
-# 可选值: redis (Redis Streams), mysql (MySQL)
-QUEUE_DRIVER=redis
+在 `internal/infras/config/config.yaml` 中配置消息队列：
+
+```yaml
+queue:
+  driver: redis                    # 驱动类型: redis (Redis Streams) / mysql (MySQL)
+  consumer_group: Gonio-group      # 消费者组名称
+  default_max_len: 20              # 默认 Stream 最大长度
+  trim_interval: 3600              # Stream 修剪间隔（秒）
+  topic_concurrency:               # 各主题并发数
+    operation_log: 1
+    notification: 1
+    system_event: 1
+  topic_max_len:                   # 各主题最大长度
+    operation_log: 100
+    notification: 50
+    system_event: 20
 ```
 
 ### Redis Streams 驱动
 
-当 `QUEUE_DRIVER=redis` 时，使用 Redis Streams 作为消息队列后端。
+当 `driver: redis` 时，使用 Redis Streams 作为消息队列后端。
 
 **特点：**
 - 高性能，基于内存
@@ -53,11 +65,11 @@ QUEUE_DRIVER=redis
 
 **前置条件：**
 - Redis 服务正常运行
-- 已配置 `REDIS_ADDR` 环境变量
+- 已配置 `redis.addr`（默认 `127.0.0.1:6379`）
 
 ### MySQL 驱动
 
-当 `QUEUE_DRIVER=mysql` 时，使用 MySQL 数据库表作为消息队列后端。
+当 `driver: mysql` 时，使用 MySQL 数据库表作为消息队列后端。
 
 **特点：**
 - 无需额外中间件
@@ -67,7 +79,6 @@ QUEUE_DRIVER=redis
 
 **前置条件：**
 - 数据库连接正常
-- 自动创建 `queue_messages` 表
 
 **queue_messages 表结构：**
 
@@ -93,16 +104,27 @@ QUEUE_DRIVER=redis
 
 ### 1. 初始化消息队列
 
-消息队列在 `main.go` 中自动初始化，无需手动配置。初始化后的消息路由器存储在全局变量 `global.MsgRouter` 中，可在项目的任何地方直接使用：
+消息队列在 `internal/interfaces/app/app.go` 中自动初始化，无需手动配置。初始化后的消息路由器存储在全局变量 `global.MsgRouter` 中，可在项目的任何地方直接使用：
 
 ```go
-// main.go 中自动执行
-q, err := queue.InitQueue(cache.RedisClient, db)
-if err != nil {
-    global.Logger.Warn("Message queue init failed", zap.Error(err))
-} else {
-    global.MsgRouter = queue.NewMessageRouter(q)
-    global.MsgRouter.RegisterDefaultHandlers()
+// app.go 中自动执行
+func initMessageQueue(db *gorm.DB) {
+    if db == nil {
+        return
+    }
+
+    q, err := queue.InitQueue(cache.RedisClient, db)
+    if err != nil {
+        global.Logger.Warn("Message queue init failed", zap.Error(err))
+        return
+    }
+
+    global.MsgRouter = queue.NewMessageRouter(q, db)
+    if err := global.MsgRouter.RegisterDefaultHandlers(); err != nil {
+        global.Logger.Warn("Register default handlers failed", zap.Error(err))
+    } else {
+        global.Logger.Info("Message queue initialized successfully")
+    }
 }
 ```
 
@@ -181,6 +203,60 @@ func handleMyTopic(msg Message) error {
 
     // 执行业务逻辑
     fmt.Printf("处理用户 %d 的 %s 操作\n", int(userID), action)
+    return nil
+}
+```
+
+## 默认消息处理器
+
+### 1. 操作日志处理器 (`handleOperationLog`)
+
+操作日志消息通过消息队列异步写入数据库，避免同步写入影响接口响应性能：
+
+```go
+func (r *MessageRouter) handleOperationLog(msg Message) error {
+    payload := msg.Payload
+
+    log := model.OperationLog{
+        Username:  toString(payload["username"]),
+        Action:    toString(payload["action"]),
+        Method:    toString(payload["method"]),
+        Path:      toString(payload["path"]),
+        Params:    toString(payload["params"]),
+        Result:    toString(payload["result"]),
+        Duration:  toInt64(payload["duration"]),
+        IP:        toString(payload["ip"]),
+        UserAgent: toString(payload["user_agent"]),
+    }
+
+    if r.db != nil {
+        if err := r.db.Create(&log).Error; err != nil {
+            return fmt.Errorf("保存操作日志失败: %w", err)
+        }
+    } else {
+        fmt.Printf("[Queue] 操作日志(DB未初始化): %+v\n", payload)
+    }
+
+    return nil
+}
+```
+
+### 2. 通知处理器 (`handleNotification`)
+
+```go
+func handleNotification(msg Message) error {
+    fmt.Printf("[Queue] 通知: %+v\n", msg.Payload)
+    // TODO: 实际业务处理，如发送邮件、推送通知等
+    return nil
+}
+```
+
+### 3. 系统事件处理器 (`handleSystemEvent`)
+
+```go
+func handleSystemEvent(msg Message) error {
+    fmt.Printf("[Queue] 系统事件: %+v\n", msg.Payload)
+    // TODO: 实际业务处理，如清理缓存、刷新配置等
     return nil
 }
 ```
@@ -283,7 +359,6 @@ system:config      # 系统配置变更
 
 **解决：**
 - 检查 Redis 服务是否正常运行
-- 检查 `REDIS_ADDR` 配置是否正确
 
 ### 2. MySQL 连接失败
 

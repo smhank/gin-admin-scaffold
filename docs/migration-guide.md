@@ -10,10 +10,12 @@
 internal/infras/migration/          # 迁移核心库
 ├── migration.go                    # Migration 接口 + BaseMigration 基类
 ├── manager.go                      # 迁移管理器（up/down/history/create）
-├── m20250506_000001_init_seed_data.go        # 迁移示例：初始化种子数据
-└── m20250506_000002_add_operation_log_menu.go # 迁移示例：添加操作历史菜单
+├── m20250506_000000_init_tables.go                 # 迁移：初始化所有表结构
+├── m20250506_000001_init_seed_data.go              # 迁移：初始化种子数据
+├── m20250506_000002_add_operation_log_menu.go      # 迁移：添加操作历史菜单
+└── m20260507_101614_create_table_test_migration.go # 迁移：创建测试迁移表
 
-cmd/migrate/main.go                 # CLI 命令入口
+cmd/migrate/main.go                 # CLI 命令入口（含自动注册功能）
 ```
 
 ## 快速开始
@@ -56,15 +58,19 @@ go run cmd/migrate/main.go down 3
 go run cmd/migrate/main.go create add_user_avatar_field
 ```
 
-会在 `internal/infras/migration/` 目录下生成类似 `m20250506_161500_add_user_avatar_field.go` 的文件。
+会在 `internal/infras/migration/` 目录下生成类似 `m20250506_161500_add_user_avatar_field.go` 的文件，并**自动注册**到 `cmd/migrate/main.go` 的 `registerMigrations` 函数中。
 
 ## 创建迁移
 
-### 1. 使用 CLI 生成模板
+### 1. 使用 CLI 生成模板（推荐）
 
 ```bash
 go run cmd/migrate/main.go create add_user_avatar_field
 ```
+
+CLI 会自动：
+1. 生成迁移文件到 `internal/infras/migration/` 目录
+2. 自动将新迁移注册到 `cmd/migrate/main.go` 的 `registerMigrations` 函数中
 
 ### 2. 编辑生成的迁移文件
 
@@ -102,16 +108,18 @@ func (m *M20250506161500AddUserAvatarField) Down(db *gorm.DB) error {
 }
 ```
 
-### 3. 注册迁移
+### 3. 注册迁移（手动方式）
 
-在 `cmd/migrate/main.go` 和 `internal/infras/persistence/db.go` 的 `registerMigrations` 函数中注册：
+如果自动注册失败，或需要手动注册，在 `cmd/migrate/main.go` 的 `registerMigrations` 函数中注册：
 
 ```go
 func registerMigrations(manager *migrationlib.Manager) {
     manager.RegisterAll([]migrationlib.Migration{
-        migrationlib.NewM20250506000001InitSeedData(),
-        migrationlib.NewM20250506000002AddOperationLogMenu(),
-        migrationlib.NewM20250506161500AddUserAvatarField(), // 新增
+        migrationlib.NewM20250506000000InitTables(),               // 建表
+        migrationlib.NewM20250506000001InitSeedData(),             // 初始化种子数据
+        migrationlib.NewM20250506000002AddOperationLogMenu(),      // 添加操作历史菜单
+        migrationlib.NewM20260507101614CreateTableTestMigration(), // create table test migration
+        migrationlib.NewM20250506161500AddUserAvatarField(),       // 添加用户头像字段（新增）
     })
 }
 ```
